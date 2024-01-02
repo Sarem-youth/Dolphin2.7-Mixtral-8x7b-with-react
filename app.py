@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 # Set your API token as an environment variable
-os.environ["REPLICATE_API_TOKEN"] = 'r8_cFA3isLlz9R8rJmL9xbdLgZ3vTeeYeG4Mf6ND'
+os.environ["REPLICATE_API_TOKEN"] = 'YOUR_API_TOKEN'
 replicate.api_token = os.environ.get('REPLICATE_API_TOKEN')
 
 @app.route('/generate', methods=['POST'])

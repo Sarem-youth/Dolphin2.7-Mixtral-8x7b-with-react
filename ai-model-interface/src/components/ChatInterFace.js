@@ -13,7 +13,6 @@ const ChatInterface = () => {
   const [temperature, setTemperature] = useState(0.7);
   const [responses, setResponses] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
-  const [responseBefore, setResponseBefore] = useState('');
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   const getConcatenatedResponses = () => {
