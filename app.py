@@ -25,7 +25,7 @@ def generate():
 
     # Call the Replicate API with the collected parameters
     output = replicate.run(
-        "kcaverly/dolphin-2.6-mistral-7b-gguf:cea782d4397606ce22b6b82ad9743a839d77b28a453c4e7e561d1f03cfc3dbe7",
+        "kcaverly/dolphin-2.7-mixtral-8x7b-gguf:1450546356d09a24302f96b3dacb301ca529f16254d3f413d630ac75ee11b1e2",
         input={
             "prompt": currentMessage,
             "system_prompt": system_prompt,

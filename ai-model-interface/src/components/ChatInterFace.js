@@ -13,7 +13,14 @@ const ChatInterface = () => {
   const [temperature, setTemperature] = useState(0.7);
   const [responses, setResponses] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
+  const [responseBefore, setResponseBefore] = useState('');
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+
+  const getConcatenatedResponses = () => {
+    let concatenatedResponses = responses.map(response => `${response.author}: ${response.response}`).join('\n');
+    concatenatedResponses += `\nuser: ${currentMessage}`;
+    return concatenatedResponses;
+  }
 
   const handleSendMessage = async () => {
     // First, add the user's message to the responses
@@ -21,7 +28,7 @@ const ChatInterface = () => {
     setCurrentMessage('');
     try {
       const response = await axios.post('/generate', {
-        currentMessage,
+        currentMessage: getConcatenatedResponses(),
         system_prompt: systemPrompt,
         prompt_template: promptTemplate,
         max_new_tokens: maxNewTokens,
