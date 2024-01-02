@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import './ChatMessages.css';
 
 const ChatMessages = ({ messages }) => {
@@ -16,7 +17,9 @@ const ChatMessages = ({ messages }) => {
     <div className="chat-messages">
       {messages.map((entry, index) => (
         <div key={index} className={`message ${entry.author}`}>
-          <div className="message-content">{entry.response}</div>
+          <div className="message-content">
+            <ReactMarkdown>{entry.response}</ReactMarkdown>
+          </div>
         </div>
       ))}
       <div ref={messagesEndRef} />
