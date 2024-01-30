@@ -25,31 +25,12 @@ const SettingsModal = ({ isOpen, settings, updateSettings, closeModal }) => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="prompt_template">Prompt Template:</label>
-            <textarea
-              id="prompt_template"
-              name="prompt_template"
-              value={settings.prompt_template}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="form-group">
             <label htmlFor="max_new_tokens">Max New Tokens:</label>
             <input
               type="number"
               id="max_new_tokens"
               name="max_new_tokens"
               value={settings.max_new_tokens}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="repeat_penalty">Repeat Penalty:</label>
-            <input
-              type="number"
-              id="repeat_penalty"
-              name="repeat_penalty"
-              value={settings.repeat_penalty}
               onChange={handleInputChange}
             />
           </div>

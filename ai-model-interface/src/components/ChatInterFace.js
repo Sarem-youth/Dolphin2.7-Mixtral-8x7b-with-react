@@ -7,17 +7,27 @@ import SettingsModal from './SettingsModal';
 
 const ChatInterface = () => {
   const [systemPrompt, setSystemPrompt] = useState('You are Dolphin, ');
-  const [promptTemplate, setPromptTemplate] = useState('<|im_start|>system {system_prompt}<|im_end|> <|im_start|>user {prompt}<|im_end|> <|im_start|>assistant');
-  const [maxNewTokens, setMaxNewTokens] = useState(-1);
-  const [repeatPenalty, setRepeatPenalty] = useState(1.1);
+  const [maxNewTokens, setMaxNewTokens] = useState(320);
   const [temperature, setTemperature] = useState(0.7);
   const [responses, setResponses] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   const getConcatenatedResponses = () => {
-    let concatenatedResponses = responses.map(response => `${response.role}: ${response.response}`).join('\n');
-    concatenatedResponses += `\nuser: ${currentMessage}`;
+    let concatenatedResponses = [
+      {
+        role: "system",
+        content: systemPrompt
+      },
+      ...responses.map(response => ({
+        role: response.role,
+        content: response.response
+      })),
+      {
+        role: "user",
+        content: currentMessage
+      }
+    ];
     return concatenatedResponses;
   }
 
@@ -28,21 +38,24 @@ const ChatInterface = () => {
     try {
       const response = await axios.post('/generate', {
         currentMessage: getConcatenatedResponses(),
-        system_prompt: systemPrompt,
-        prompt_template: promptTemplate,
         max_new_tokens: maxNewTokens,
-        repeat_penalty: repeatPenalty,
         temperature
       }, {
-        baseURL: 'https://expert-space-succotash-gjjjp999rr43pgxv-5000.app.github.dev/',
+        baseURL: 'http://localhost:5000',
         withCredentials: true,
-        headers: {'Access-Control-Allow-Origin': '*'}
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
       });
   
       // Then, add the assistant's response to the responses
-      setResponses(responses => [...responses, { role: 'assistant', response: response.data }]);
+      if (response.data.choices && response.data.choices.length > 0) {
+        setResponses(responses => [...responses, { role: 'assistant', response: response.data.choices[0].message.content }]);
+      }
     } catch (error) {
-      console.error('Error generating response:', error);
+      // console.error('Error generating response:', error);
     }
   
     // Clear the input after sending
@@ -55,14 +68,8 @@ const ChatInterface = () => {
       case 'system_prompt':
         setSystemPrompt(value);
         break;
-      case 'prompt_template':
-        setPromptTemplate(value);
-        break;
       case 'max_new_tokens':
         setMaxNewTokens(Number(value));
-        break;
-      case 'repeat_penalty':
-        setRepeatPenalty(Number(value));
         break;
       case 'temperature':
         setTemperature(Number(value));
@@ -87,9 +94,7 @@ const ChatInterface = () => {
         isOpen={isSettingsModalOpen}
         settings={{
           system_prompt: systemPrompt,
-          prompt_template: promptTemplate,
           max_new_tokens: maxNewTokens,
-          repeat_penalty: repeatPenalty,
           temperature
         }}
         updateSettings={handleSettingsChange}
