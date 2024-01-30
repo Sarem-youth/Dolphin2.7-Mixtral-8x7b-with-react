@@ -16,7 +16,7 @@ const ChatMessages = ({ messages }) => {
   return (
     <div className="chat-messages">
       {messages.map((entry, index) => (
-        <div key={index} className={`message ${entry.author}`}>
+        <div key={index} className={`message ${entry.role}`}>
           <div className="message-content">
             <ReactMarkdown>{entry.response}</ReactMarkdown>
           </div>

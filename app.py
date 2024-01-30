@@ -17,12 +17,13 @@ def generate():
     data = request.json
     messages = data['messages']
     temperature = data['temperature']
-    max_tokens = data['max_tokens']
+    max_new_tokens = data['max_new_tokens']
+    repeat_penalty = data.get('repeat_penalty', None)  # Optional parameter
 
     # Set up the headers with the Forefront API key
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': f'Bearer {os.environ["sk-3F8hOidonfgjdBZ5eT8kBOccewlBndNc"]}'
+        'Authorization': f'Bearer {os.environ["FOREFRONT_API_KEY"]}'
     }
 
     # Forefront API URL
@@ -33,8 +34,12 @@ def generate():
         "model": "forefront/dolphin-2.6-mistral-7b-dpo-chatml",  # Replace with the actual model string
         "messages": messages,
         "temperature": temperature,
-        "max_tokens": max_tokens
+        "max_new_tokens": max_new_tokens
     }
+
+    # Include repeat_penalty in payload if provided
+    if repeat_penalty is not None:
+        payload['repeat_penalty'] = repeat_penalty
 
     # Make the POST request to the Forefront API
     response = requests.post(url, json=payload, headers=headers)
