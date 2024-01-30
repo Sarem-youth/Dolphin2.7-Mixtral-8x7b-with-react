@@ -1,46 +1,51 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 import os
-import replicate
+import requests
 
 app = Flask(__name__)
 
 # Enable CORS for specific origin
 CORS(app, support_credentials=True)
 
-# Set your API token as an environment variable
-os.environ["REPLICATE_API_TOKEN"] = 'YOUR_API_TOKEN'
-replicate.api_token = os.environ.get('REPLICATE_API_TOKEN')
+# Set your Forefront API key as an environment variable
+os.environ["FOREFRONT_API_KEY"] = 'sk-3F8hOidonfgjdBZ5eT8kBOccewlBndNc'
 
 @app.route('/generate', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def generate():
     data = request.json
-    currentMessage = data['currentMessage']
-    system_prompt = data['system_prompt']
-    prompt_template = data['prompt_template']
-    max_new_tokens = data['max_new_tokens']
-    repeat_penalty = data['repeat_penalty']
+    messages = data['messages']
     temperature = data['temperature']
+    max_tokens = data['max_tokens']
 
-    # Call the Replicate API with the collected parameters
-    output = replicate.run(
-        "kcaverly/dolphin-2.7-mixtral-8x7b-gguf:1450546356d09a24302f96b3dacb301ca529f16254d3f413d630ac75ee11b1e2",
-        input={
-            "prompt": currentMessage,
-            "system_prompt": system_prompt,
-            "prompt_template": prompt_template,
-            "max_new_tokens": max_new_tokens,
-            "repeat_penalty": repeat_penalty,
-            "temperature": temperature
-        }
-    )
+    # Set up the headers with the Forefront API key
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {os.environ["sk-3F8hOidonfgjdBZ5eT8kBOccewlBndNc"]}'
+    }
 
-    # Iterate over the generator to retrieve the output
-    full_output = ''.join([item for item in output])
+    # Forefront API URL
+    url = "https://api.forefront.ai/v1/chat/completions"
 
-    # Return the generated text as a JSON response
-    return jsonify(full_output)
+    # Payload for the Forefront API
+    payload = {
+        "model": "forefront/dolphin-2.6-mistral-7b-dpo-chatml",  # Replace with the actual model string
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": max_tokens
+    }
+
+    # Make the POST request to the Forefront API
+    response = requests.post(url, json=payload, headers=headers)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Return the generated text as a JSON response
+        return jsonify(response.json())
+    else:
+        # Handle errors
+        return jsonify({"error": "Failed to generate text", "details": response.text}), response.status_code
 
 if __name__ == '__main__':
     app.run(debug=True)
