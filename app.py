@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Set your Forefront API key as an environment variable
-os.environ["FOREFRONT_API_KEY"] = 'Your_ForeFront_API_Key'
+os.environ["FOREFRONT_API_KEY"] = 'sk-a5ctWuiUYVkKfPVOd6rRRztytpMhjlFZ'
 
 @app.route('/generate', methods=['POST'])
 @cross_origin(supports_credentials=True)

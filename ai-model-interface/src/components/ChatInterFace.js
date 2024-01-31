@@ -6,12 +6,13 @@ import ChatInput from './ChatInput';
 import SettingsModal from './SettingsModal';
 
 const ChatInterface = () => {
-  const [systemPrompt, setSystemPrompt] = useState('You are Dolphin, ');
-  const [maxNewTokens, setMaxNewTokens] = useState(320);
+  const [systemPrompt, setSystemPrompt] = useState('You are Dolphin,');
+  const [maxNewTokens, setMaxNewTokens] = useState(1500);
   const [temperature, setTemperature] = useState(0.7);
   const [responses, setResponses] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isLoading , setIsLoading] = useState(false);
 
   const getConcatenatedResponses = () => {
     let concatenatedResponses = [
@@ -35,13 +36,14 @@ const ChatInterface = () => {
     // First, add the user's message to the responses
     setResponses(responses => [...responses, { role: 'user', response: currentMessage }]);
     setCurrentMessage('');
+    setIsLoading(true);
     try {
       const response = await axios.post('/generate', {
         currentMessage: getConcatenatedResponses(),
         max_new_tokens: maxNewTokens,
         temperature
       }, {
-        baseURL: 'http://localhost:5000',
+        baseURL: 'https://chatwithdolphin.com/ai/',
         withCredentials: true,
         headers: {
           'Access-Control-Allow-Origin': '*',
@@ -54,7 +56,9 @@ const ChatInterface = () => {
       if (response.data.choices && response.data.choices.length > 0) {
         setResponses(responses => [...responses, { role: 'assistant', response: response.data.choices[0].message.content }]);
       }
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       // console.error('Error generating response:', error);
     }
   
@@ -83,7 +87,7 @@ const ChatInterface = () => {
   return (
     <div className="container">
       <h1>AI Model Interaction</h1>
-      <ChatMessages messages={responses} />
+      <ChatMessages messages={responses} isLoading={isLoading}/>
       <ChatInput
         onSendMessage={handleSendMessage}
         currentMessage={currentMessage}

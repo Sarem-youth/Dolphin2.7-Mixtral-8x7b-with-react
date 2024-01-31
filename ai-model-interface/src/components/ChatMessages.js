@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import './ChatMessages.css';
 
-const ChatMessages = ({ messages }) => {
+const ChatMessages = ({ messages, isLoading }) => {
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -22,9 +22,9 @@ const ChatMessages = ({ messages }) => {
           </div>
         </div>
       ))}
+      {isLoading && <p className="loading-text"></p>}
       <div ref={messagesEndRef} />
     </div>
   );
 };
-
 export default ChatMessages;
